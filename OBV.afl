@@ -3,8 +3,6 @@ BottomLevel = -50000;  // Scaled lower threshold
 Top1 = 40000;
 Bottom1 = -40000;
 obvValue = OBV();
-UpperBuffer = 25000;  // Buffer for the upper threshold
-LowerBuffer = -25000;  // Buffer for the lower threshold
 
 // Calculate rolling minimum and maximum OBV values
 minOBV = LLV(obvValue, 252);  // Minimum OBV value in the last 252 periods
@@ -22,18 +20,16 @@ Plot(Bottom1, "Bottom Static Line", colorGreen, styleLine | styleThick | styleNo
 Plot(scaledOBV, "Scaled OBV", colorBlue, styleLine | styleOwnScale | styleThick);
 
 // Generate buy and sell signals
-BuySignal = Cross(scaledOBV, Bottom1 + UpperBuffer) AND scaledOBV < Bottom1 - LowerBuffer;
-SellSignal = Cross(Top1 - UpperBuffer, scaledOBV) AND scaledOBV > Top1 + LowerBuffer;
+BuySignal = Cross(scaledOBV, -40000);
+SellSignal = Cross(40000, scaledOBV);
 
 // Plot buy and sell signals
 Plot(IIf(BuySignal, scaledOBV, Null), "Buy Signal", colorGreen, styleHistogram | styleNoTitle);
 Plot(IIf(SellSignal, scaledOBV, Null), "Sell Signal", colorRed, styleHistogram | styleNoTitle);
 
 // Debug plots for buffer conditions
-Plot(Bottom1 + UpperBuffer, "Bottom1 + UpperBuffer", colorOrange, styleLine | styleDashed | styleNoTitle);
-Plot(Bottom1 - LowerBuffer, "Bottom1 - LowerBuffer", colorRed, styleLine | styleDashed | styleNoTitle);
-Plot(Top1 - UpperBuffer, "Top1 - UpperBuffer", colorOrange, styleLine | styleDashed | styleNoTitle);
-Plot(Top1 + LowerBuffer, "Top1 + LowerBuffer", colorLime, styleLine | styleDashed | styleNoTitle);
+Plot(Bottom1, "Bottom1", colorOrange, styleLine | styleDashed | styleNoTitle);
+Plot(Top1, "Top1", colorOrange, styleLine | styleDashed | styleNoTitle);
 
 // Print debug information
 AddColumn(scaledOBV, "Scaled OBV");
