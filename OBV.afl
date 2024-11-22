@@ -1,33 +1,40 @@
-TopLevel = 100;  // Scaled upper threshold
-BottomLevel = -100;  // Scaled lower threshold
-Top1 = 80;
-Bottom1 = -80;
+TopLevel = 50000;  // Scaled upper threshold
+BottomLevel = -50000;  // Scaled lower threshold
+Top1 = 40000;
+Bottom1 = -40000;
 obvValue = OBV();
-UpperBuffer = 50;  // Buffer for the upper threshold
-LowerBuffer = -50;  // Buffer for the lower threshold
+UpperBuffer = 25000;  // Buffer for the upper threshold
+LowerBuffer = -25000;  // Buffer for the lower threshold
 
-// Debug plots for raw OBV values
-Plot(obvValue, "Raw OBV", colorBlack, styleLine | styleThick);
-Plot(Lowest(obvValue), "Lowest OBV", colorPlum, styleLine | styleDashed);
-Plot(Highest(obvValue), "Highest OBV", colorOrange, styleLine | styleDashed);
-
-normalizedOBV = 100 * (obvValue - Lowest(obvValue)) / (Highest(obvValue) - Lowest(obvValue));
+// Plot static lines
 Plot(TopLevel, "Top Static Line", colorRed, styleLine | styleNoLine | styleNoTitle);
 Plot(BottomLevel, "Bottom Static Line", colorGreen, styleLine | styleNoLine | styleNoTitle);
 Plot(Top1, "Top Static Line", colorRed, styleLine | styleThick | styleNoTitle);
 Plot(Bottom1, "Bottom Static Line", colorGreen, styleLine | styleThick | styleNoTitle);
-Plot(normalizedOBV, "Normalized OBV", colorBlue, styleLine | styleOwnScale | styleThick);
-BuySignal = Cross(normalizedOBV, Bottom1 + UpperBuffer) AND normalizedOBV < Bottom1 - LowerBuffer;
-SellSignal = Cross(Top1 - UpperBuffer, normalizedOBV) AND normalizedOBV > Top1 + LowerBuffer;
-Plot(IIf(BuySignal, normalizedOBV, Null), "Buy Signal", colorGreen, styleHistogram | styleNoTitle | styleOwnScale);
-Plot(IIf(SellSignal, normalizedOBV, Null), "Sell Signal", colorRed, styleHistogram | styleNoTitle | styleOwnScale);
+
+// Plot OBV line for debugging
+Plot(obvValue, "OBV", colorBlue, styleLine | styleOwnScale | styleThick);
+
+// Generate buy and sell signals
+BuySignal = Cross(obvValue, Bottom1 + UpperBuffer) AND obvValue < Bottom1 - LowerBuffer;
+SellSignal = Cross(Top1 - UpperBuffer, obvValue) AND obvValue > Top1 + LowerBuffer;
+
+// Plot buy and sell signals
+Plot(IIf(BuySignal, obvValue, Null), "Buy Signal", colorGreen, styleHistogram | styleNoTitle);
+Plot(IIf(SellSignal, obvValue, Null), "Sell Signal", colorRed, styleHistogram | styleNoTitle);
+
+// Debug plots for buffer conditions
 Plot(Bottom1 + UpperBuffer, "Bottom1 + UpperBuffer", colorOrange, styleLine | styleDashed | styleNoTitle);
 Plot(Bottom1 - LowerBuffer, "Bottom1 - LowerBuffer", colorRed, styleLine | styleDashed | styleNoTitle);
 Plot(Top1 - UpperBuffer, "Top1 - UpperBuffer", colorOrange, styleLine | styleDashed | styleNoTitle);
 Plot(Top1 + LowerBuffer, "Top1 + LowerBuffer", colorLime, styleLine | styleDashed | styleNoTitle);
-AddColumn(normalizedOBV, "Normalized OBV");
+
+// Print debug information
+AddColumn(obvValue, "OBV");
 AddColumn(BuySignal, "Buy Signal");
 AddColumn(SellSignal, "Sell Signal");
-Title = EncodeColor(colorWhite) + "OBV: " + WriteVal(normalizedOBV, 1.2) +
+
+// Title with dynamic values
+Title = EncodeColor(colorWhite) + "OBV: " + WriteVal(obvValue, 1.2) +
         " | TopLevel: " + WriteVal(TopLevel, 1.2) +
         " | BottomLevel: " + WriteVal(BottomLevel, 1.2);
