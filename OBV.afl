@@ -7,8 +7,8 @@ UpperBuffer = 25000;  // Buffer for the upper threshold
 LowerBuffer = -25000;  // Buffer for the lower threshold
 
 // Calculate scaling factor based on desired range
-minOBV = Lowest(obvValue, 252);  // Minimum OBV value in the last year (252 trading days)
-maxOBV = Highest(obvValue, 252);  // Maximum OBV value in the last year
+minOBV = Lowest(obvValue);  // Minimum OBV value
+maxOBV = Highest(obvValue);  // Maximum OBV value
 scaleFactor = (TopLevel - BottomLevel) / (maxOBV - minOBV);
 scaledOBV = (obvValue - minOBV) * scaleFactor + BottomLevel;
 
