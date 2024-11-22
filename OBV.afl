@@ -25,6 +25,3 @@ AddColumn(SellSignal, "Sell Signal");
 Title = EncodeColor(colorWhite) + "OBV: " + WriteVal(normalizedOBV, 1.2) +
         " | TopLevel: " + WriteVal(TopLevel, 1.2) +
         " | BottomLevel: " + WriteVal(BottomLevel, 1.2);
-        
-        
-        
