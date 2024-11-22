@@ -16,19 +16,14 @@ Plot(BottomLevel, "Bottom Static Line", colorGreen, styleLine | styleNoLine | st
 Plot(Top1, "Top Static Line", colorRed, styleLine | styleThick | styleNoTitle);
 Plot(Bottom1, "Bottom Static Line", colorGreen, styleLine | styleThick | styleNoTitle);
 
-// Plot original OBV for comparison
 Plot(obvValue, "Original OBV", colorWhite, styleLine | styleOwnScale | styleThick);
 
-// Plot scaled OBV line for debugging
 Plot(scaledOBV, "Scaled OBV", colorBlue, styleLine | styleOwnScale | styleThick);
 
 // Generate buy and sell signals
 BuySignal = Cross(scaledOBV, Bottom1);
 SellSignal = Cross(Top1, scaledOBV);
 
-Plot(IIf(BuySignal, scaledOBV, Null), "Buy Signal", colorGreen, styleHistogram | styleNoTitle);
-Plot(IIf(SellSignal, scaledOBV, Null), "Sell Signal", colorRed, styleHistogram | styleNoTitle);
-// Plot buy and sell signals
 Plot(IIf(BuySignal, scaledOBV, Null), "Buy Signal", colorGreen, styleHistogram | styleNoTitle);
 Plot(IIf(SellSignal, scaledOBV, Null), "Sell Signal", colorRed, styleHistogram | styleNoTitle);
 
