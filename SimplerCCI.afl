@@ -1,0 +1,49 @@
+_SECTION_BEGIN("UpperAndLower");
+Issue   = CCI(20);
+Upper = 100;
+Middle  = 0;
+Lower =-100;
+Plot(Issue,"CCI(20)",colorWhite,styleLine);
+
+btop = Upper;
+bbot = Lower;
+Plot( bbot , "BBot", colorDarkGrey, styleDashed);
+Plot( btop , "BTop", colorDarkGrey, styleDashed);
+PlotOHLC( btop, btop, bbot, bbot, "", colorDarkGrey ,styleCloud, 0,1 );
+
+Plot(Middle,"0",colorBlack,styleLine);
+Buy=Cross(Issue,Lower);
+Sell=Cross(Upper,Issue);
+Short = Cross(Upper,Issue);
+Cover = Cross(Issue,Lower);
+//PlotShapes(IIf(Buy, shapeSmallCircle, shapeNone),colorLime, 0,L, Offset=-40);
+PlotShapes(IIf(Buy, shapeSmallUpTriangle, shapeNone),colorLime, 0,L, Offset=-35);
+//PlotShapes(IIf(Sell, shapeCircle, shapeNone),colorOrange, 0,H, Offset=40);
+PlotShapes(IIf(Sell, shapeSmallDownTriangle, shapeNone),colorOrange, 0,H, Offset=-35);
+_SECTION_END();
+
+
+
+_SECTION_BEGIN("TestInfo");
+BuyPrice = Close;
+SellPrice = Close;
+SetPositionSize( 10000, spsValue ); // 10K in each trade
+SetTradeDelays(0,0,0,0);
+_SECTION_END();
+
+//_SECTION_BEGIN("Middle");
+//Middle  = 0;
+//Plot(Middle,"0",colorGold,styleDashed);
+//Buy=Cross(Issue,Middle);
+//Sell=Cross(Middle,Issue);
+//PlotShapes(IIf(Buy, shapeSmallCircle, shapeNone),colorLime, 0,L, Offset=-5);
+//PlotShapes(IIf(Sell, shapeSmallCircle, shapeNone),colorOrange, 0,H, Offset=5);
+//_SECTION_END();
+//_SECTION_BEGIN("CCIColorChange");
+//P1 = Param("Time Periods",20,.015,3,.015);
+//MyPDI= PDI(P1);//Positive Directional Indicator
+//MyMDI= MDI(P1);//Negative Directional Indicator (Minus)
+//Issue= CCI(P1);//Average Directional Movement Index
+//col = IIf( Issue > Ref( Issue, -1 ), colorLime, colorOrange );
+//Plot ( Issue,"CCI",col, styleThick);
+//_SECTION_END();

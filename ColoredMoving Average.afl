@@ -1,0 +1,102 @@
+//Triangular Moving average
+//Anthony Faragasso
+//December, 2002
+
+Odd=13;//enter Odd numbers only
+CoefOdd=round(Odd/2);
+
+Even=12;//enter Even numbers only
+Coefeven=Even/2;
+Coefeven2=Coefeven+1;
+
+CongestionPercent=2.8;/*Set % above/below Moving average for congestion / sideways market*/
+
+TriangularOdd=MA(MA(C,CoefOdd),CoefOdd);
+TriangularEven=MA(MA(C,Coefeven),Coefeven2);
+
+finalMov_avg=IIf(Odd > even,triangularOdd,TriangularEven);
+
+Color=colorBrightGreen;//select Moving average line color
+tickercolor=colorBlack;//select price color
+
+Plot(finalMov_avg,"",IIf(C < finalmov_avg,colorRed,Color),styleLine|styleThick);
+Plot(C,"",tickercolor,styleCandle);
+
+//Title=Name()+"..."+"( "+WriteIf(Odd > even,WriteVal(Odd,1),WriteVal(even,1))+" ) Period "+EncodeColor(Color)+"Triangular"+WriteIf(Odd > even,"ODD","EVEN")+" Moving Average"+"..."+EncodeColor(colorBlack)+ WriteIf(C < finalMov_avg,"Close is "+EncodeColor(colorRed)+"Below"+EncodeColor(colorBlack)+" Moving Average by ","Close is"+EncodeColor(colorBrightGreen)+" Above"+EncodeColor(colorBlack)+" Moving Average by ")+"("+WriteVal(((C/finalMov_avg)-1)*100,1.1)+"% )"+"\n"+WriteIf(finalmov_avg-Ref(finalmov_avg,-1)>0," Slope Of Average is UP : ","Slope Of Average is DOWN :")+WriteIf((((C/finalMov_avg)-1)*100 <= CongestionPercent AND ((C/finalMov_avg)-1)*100 >= -CongestionPercent),EncodeColor(colorYellow)+" with Price Congestion / Divergence to Average ","")+"\n"+WriteIf(Ref(C,-1) < Ref(finalmov_avg,-1) AND C > finalmov_avg,EncodeColor(colorGreen)+"Possible Change in Trend From Down to Up"+"\n"+" OR Short Term Correction of Previous Trend",WriteIf(Ref(C,-1) > Ref(finalmov_avg,-1) AND C < finalmov_avg,EncodeColor(colorRed)+"Possible Change in Trend From Up to Down "+"\n"+" OR Short Term Correction to Previous Trend",""))+"\n"+WriteIf(C > finalmov_avg,EncodeColor(colorGreen)+"Close has been above Moving Average ( "+WriteVal(BarsSince(C < finalmov_avg),1)+" ) Bars",EncodeColor(colorRed)+"Close has been Below Moving Average ( "+WriteVal(BarsSince(C > finalmov_avg),1)+" ) Bars")+"\n"+EncodeColor(colorBlack)+"The average # of Bars Above ( "+WriteVal(round(Cum(BarsSince(C < finalmov_avg)/Cum(1))),1)+" )"+"\n"+"The average # of Bars Below ( "+WriteVal(round(Cum(BarsSince(C > finalmov_avg)/Cum(1))),1)+" )";
+_SECTION_BEGIN("AFL Example");
+
+SetBarsRequired(10000,10000); /* this ensures that the charts include all bars AND NOT just those on screen */
+SetFormulaName("Sample System"); /*name it for backtest report identification */
+SetTradeDelays( 1, 1, 1, 1 ); /* delay entry/exit by one bar */
+SetOption( "initialequity", 100000 ); /* starting capital */
+PositionSize = -10; /* trade size will be 10% of available equty */
+SetOption( "MaxOpenPositions", 6 ); /* I don't want to comit more than 60% of Equity at any one time */
+SetOption( "PriceBoundChecking", 1 ); /* trade only within the chart bar's price range */
+SetOption( "CommissionMode", 2 ); /* set commissions AND costs as $ per trade */
+SetOption( "CommissionAmount", 32.95 ); /* commissions AND cost */
+SetOption( "UsePrevBarEquityForPosSizing", 1 ); /*set the use of last bars equity for trade size*/
+PositionScore = 100/C; /*Set the order for which stock trades when get mulitple signals in one bar in backtesting */
+
+LongPer = Param("Long Period", 50, 30, 100, 5 ); /* select periods with parameter window */
+ShortPer = Param("Short Period", 5, 3, 10, 1 );
+
+LongMA = EMA( C, LongPer );
+ShortMA = EMA( C, ShortPer );
+LastHigh = HHV( H, LongPer );
+
+Buy = Cross( ShortMA, LongMA ) AND H > Ref( LastHigh, -1 );
+Sell = Cross( LongMA, ShortMA );
+
+Buy = ExRem(Buy,Sell);
+Sell = ExRem(Sell,Buy);
+
+Filter = Buy OR Sell;
+AddTextColumn( FullName(), "Company Name" );
+AddColumn( Buy, "Buy", 1 );
+AddColumn( Sell, "Sell", 1 );
+AddColumn( C, "Close", 1.3 );
+AddColumn( H, "High", 1.3 );
+AddColumn( LastHigh, "HHV", 1.3 );
+AddColumn( LongMA, "Long MA", 1,3 );
+AddColumn( ShortMA, "Short MA", 1,3 );
+
+
+GraphXSpace = 10; /* create empty space of 10% top and bottom of chart */
+
+Plot( C, " Close Price", colorBlack, styleBar );
+Plot( LongMA, " EMA(C,"+WriteVal(LongPer,1)+")", colorBlack, styleLine|styleNoRescale );
+Plot( ShortMA, " EMA(C,"+WriteVal(ShortPer,1)+")", colorBlack, styleLine|styleNoRescale );
+Plot( Ref(Lasthigh,-1), " HHV(H,"+WriteVal(LongPer,1)+")", colorRed, styleNoLine|styleDots|styleNoRescale );
+
+/* styleNoRescale in the plots stops the added plots from compressing the original bar chart to the middle of the pane */
+
+PlotShapes( shapeUpArrow*Buy, colorGreen, 0, L, -10 );
+PlotShapes( shapeDownArrow*Sell, colorRed, 0, H, -10 );
+
+//Title = " {{NAME}} {{DATE}} {{INTERVAL}} "+_DEFAULT_NAME()+" Chart values : {{VALUES}} ";
+_SECTION_END();
+
+//www.aflcode.com
+_SECTION_BEGIN("MA Crossover Unicolor");
+
+//Plot(EMA(Close,3),"3-EMA",colorYellow,1);
+//Plot(EMA(Close,5),"5-EMA",colorWhite,4);
+
+r=EMA(C,3);
+a=EMA(C,5);
+
+no=Param( "Swing", 5, 1, 55 );
+
+res=HHV(H,no);
+sup=LLV(L,no);
+tsl=IIf(ValueWhen(IIf(C>Ref(res,-1),1,IIf(C<Ref(sup,-1),-1,0))!=0,IIf(C>Ref(res,-1),1,IIf(C<Ref(sup,-1),-1,0)),1)==1,sup,res);
+
+Plot(tsl, _DEFAULT_NAME(), colorBlack, styleStaircase);
+Buy = Cross(C,res) ;
+Sell = Cross(sup,C)  ;
+PlotShapes (IIf(Buy,shapeUpArrow,shapeNone),colorYellow,0,Graph0,-15);
+PlotShapes (IIf(Sell,shapeDownArrow,shapeNone),colorCustom12,0,Graph0,-15);
+SetPositionSize( 10000, spsValue ); // 10K in each trade
+SetTradeDelays(0,0,0,0);
+
+_SECTION_END();

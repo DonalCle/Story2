@@ -1,0 +1,40 @@
+Issue =OBV();
+Plot(OBV(),"",colorWhite);
+N = Param("Days to go back(Excl today)", 10, 2, 200, 1);
+//PriceStyle = ParamStyle("Chart Type", styleCandle, maskPrice);
+LineStyle = ParamStyle("Line Style");
+
+NDayHi = H[BarCount - 1 - N];
+NDayLo = L[BarCount - 1 - N];
+XH = XL = BarCount - 1 - N;
+
+
+for(i = BarCount - 1 - N; i < BarCount - 1; i++)
+{
+if(H[i] > NDayHi)
+{
+NDayHi = H[i];
+XH = i;
+
+}
+if(L[i] < NDayLo)
+{
+NDayLo = L[i];
+XL = i;
+}
+}
+
+
+// Define the Lines to be drawn
+
+HLine = LineArray(BarCount - 1 - N, NDayHi, BarCount - 2, NDayHi);
+//LLine = LineArray(BarCount - 2 - N, NDayLo, BarCount - 2, NDayLo);
+
+// Plot chart
+
+Plot(Hline, WriteVal(N, 1.0) + " Day Hi", colorWhite, LineStyle);
+//Plot(LLine, WriteVal(N, 1.0) + " Day Lo", colorBlue, LineStyle);
+
+//Buy=Cross(Issue,lvmean);
+//PlotShapes(IIf(Buy, shapeSmallUpTriangle, shapeNone),colorLime, 0,L, Offset=-35);
+//PlotShapes(IIf(Buy, shapeDigit0, shapeNone), colorGreen, 0, H, Offset=15, xShift=-3 );

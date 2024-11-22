@@ -1,0 +1,32 @@
+//SetChartBkGradientFill( ParamColor("BgTop", colorWhite),ParamColor("BgBottom", colorLightYellow));
+_SECTION_BEGIN("ADX Settings");
+TP= Param("Time Periods",14,1,50);
+PlusDM= IIf(High>Ref(High,-1)AND Low>=Ref(Low,-1), High-Ref(High,-1),
+IIf(High>Ref(High,-1) AND Low<Ref(Low,-1)AND High-Ref(High,-1)>Ref(Low,-1)-Low,
+High-Ref(High,-1), 0));
+DIPlus= 100 * Wilders(PlusDM,TP) /
+ATR(TP);
+
+MinusDM= IIf(Low<Ref(Low,-1) AND High<=Ref(High,-1), Ref(Low,-1)-Low,
+IIf(High>Ref(High,-1) AND Low<Ref(Low,-1)AND High-Ref(High,-1)<Ref(Low,-1)-Low,
+Ref(Low,-1)-Low, 0));
+DIMinus = 100 * Wilders(MinusDM,TP) /
+ATR(TP);
+Diff= abs(DIPlus - DIMinus);
+DISum= DIPlus + DIMinus;
+ADXRaw= 100 * Wilders(Diff/DISum, TP);
+
+
+_SECTION_BEGIN("Signals");
+Plot (DiPlus,"DI+", 19,1);
+Plot (DiMinus,"DI-",4,1);
+Buy=Cross(DiPlus,DiMinus);
+Sell=Cross(DiMinus,DiPlus);
+//Short = Cross(Upper,Issue);
+//Cover = Cross(Issue,Lower);
+//PlotShapes(IIf(Buy, shapeSmallCircle, shapeNone),colorLime, 0,L, Offset=-40);
+PlotShapes(IIf(Buy, shapeSmallUpTriangle, shapeNone),colorGreen, 0,L, Offset=35);
+//PlotShapes(IIf(Sell, shapeCircle, shapeNone),colorOrange, 0,H, Offset=40);
+PlotShapes(IIf(Sell, shapeSmallDownTriangle, shapeNone),colorRed, 0,H, Offset=-25);
+_SECTION_END();
+_SECTION_END();

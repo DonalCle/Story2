@@ -1,0 +1,78 @@
+//_SECTION_BEGIN("OBVCross");
+//Plot( OBV(), _DEFAULT_NAME(), ParamColor("Color", colorCycle ), ParamStyle("Style")  );
+//_SECTION_END();
+
+//_SECTION_BEGIN("Ma");
+//P = ParamField("Price field",-1);
+//Periods = Param("Periods", 200, 2, 300, 1, 10 );
+//Plot( MA( P, Periods ), _DEFAULT_NAME(), ParamColor( "Color", colorCycle ), ParamStyle("Style") );
+//_SECTION_END();
+
+// Downloaded From https://www.WiseStockTrader.com
+/// PROGRAMME MODIFIED BY PRASAD RAO FOR MASTER PLOTTER ///
+
+//_SECTION_BEGIN("BACK COLR");
+//_SECTION_BEGIN("PRASAD SYSTEMS");
+//Param("DEDICATED TO MY FATHER",5);
+//_SECTION_END();
+//GfxSetOverlayMode(1);
+//SetChartBkColor( ParamColor("Chart Color", colorBlack));
+//SetChartOptions(0,chartShowArrows|chartShowDates);
+//GfxSetOverlayMode(1);
+//GfxSelectFont("Tahoma", Status("pxheight")/8 ); /* Up down name*/
+//GfxSetTextAlign( 6 );// center alignment
+//GfxSetTextColor( ParamColor("Text Color", ColorHSB( 42, 42, 42 ) ));
+//GfxSetBkMode(0); // transparent
+//GfxTextOut( Name(), Status("pxwidth")/2, Status("pxheight")/5);
+//GfxSelectFont("Tahoma", Status("pxheight")/17 );
+//GfxTextOut( IndustryID(1), Status("pxwidth")/2, Status("pxheight")/2.6 );  /* Up Down SectBALKRISHNA MACD CHARTSor*/
+//GfxSelectFont("Tahoma", Status("pxheight")/30 );
+//GfxTextOut( "Feedback prasad9rao@gmail.com", Status("pxwidth")/2, Status("pxheight")/2.1);
+//GfxSelectFont("Tahoma", Status("pxheight")/10 );
+//GfxTextOut( "BALKRISHNA OBV CHARTS", Status("pxwidth")/2, Status("pxheight")/15 );
+//k = (GetPerformanceCounter()/100)%256;
+//printf("GetPerformance Counter %g",k);
+//GfxSelectFont("Arial Narrow", 10,700 );
+//GfxSetBkMode(1);
+//GfxSetTextColor(colorYellow);
+//GfxTextOut("Dedicated to the loving memory of MY FATHER on his 75th Birth  Anniversay - LATE BALKRISHNA RAMCHANDRA RAO 13.10.1935",100+k ,15);
+//GfxSelectFont("Century Goliath",10,500);
+//GfxSetBkMode(1);
+//GfxSetTextColor(colorAqua);
+//GfxTextOut("Prasad Inspirations",60 ,28);
+//RequestTimedRefresh(1);
+//_SECTION_END();
+
+MA_OBV_Period = Param("OBV_MA Period",10,21,150,1);
+//Plot(OBV(),"",colorWhite);
+
+_SECTION_BEGIN("CCIColorChange");
+//P1 = Param("OBV_MA Period",10,10,21,1);
+Issue= OBV();//Average Directional Movement Index
+col = IIf( Issue > Ref( Issue, -1 ), colorLime, colorOrange );
+Plot ( Issue,"OBV",col, styleThick);
+_SECTION_END();
+
+
+Plot(MA(OBV(),MA_OBV_Period),_DEFAULT_NAME(), colorBlue);
+
+
+/***********OBV CROSS MA************/
+OBV_BUY = Cross(OBV(),MA(OBV(),MA_OBV_Period));
+OBV_SELL = Cross(MA(OBV(),MA_OBV_Period),OBV());
+
+PlotShapes(IIf(OBV_BUY ,shapeSmallCircle ,Null),colorGreen);
+PlotShapes(IIf(OBV_SELL ,shapeSmallCircle ,Null),colorRed);
+/****************************************************
+                   CHART TITLES
+****************************************************/
+Title = EncodeColor(colorYellow)+  "Company :: " +Title = Name() + "    " + EncodeColor(colorLightOrange)  + "Date :: " + Date()  + "    "
+
+/********************OBV*********************/
+
+//+EncodeColor(colorWhite)+"OBV = "+EncodeColor(colorYellow)+ "["+OBV()+"]"
+//+EncodeColor(colorWhite)+"         MA "+EncodeColor(colorWhite)+ "["+ EncodeColor(colorAqua)+ MA_OBV_Period+EncodeColor(colorWhite)+"]"
+
++EncodeColor(colorWhite)+"     OBV = "+
+WriteIf(OBV_BUY,EncodeColor(colorBrightGreen)+"BUY(1)",WriteIf(OBV_SELL,EncodeColor(colorRed)+"SELL(1)",""))+
+WriteIf(NOT OBV_BUY AND NOT OBV_SELL,"No Cross","");

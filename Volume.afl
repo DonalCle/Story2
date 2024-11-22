@@ -1,0 +1,59 @@
+/*-------------------------------------------------------------
+Volume Color with Dynamic Limit
+
+NOTE: This script ONLY WORKS properly on N-minute based charts
+including hourly.  Range, tick, and volume based charts
+will default to the standard volume value.
+
+Limit the max height of volume bars to some fraction of the
+average daily volume from the previous X number of days.  Useful
+for displaying intraday bars that have frequent abnormal bars
+that make it impossible to see the rest of the volume bars
+for the day.  Bars that extend beyond this amount are colored black
+(changable in parameters).  The fraction is changeable in the
+parameters as well.  This fraction is multiplied by the interval
+so that it scales with 1 minute, 5 minute, 15 minute, hourly, etc.
+
+-------------------------------------------------------------*/
+
+
+pUpColor = ParamColor("Up Color", colorGreen );
+pDownColor = ParamColor("Down Color", colorRed );
+
+_TRACE("intval = " + NumToStr(Interval(), 0.10));
+
+if (Interval() > 1)
+{
+pTooHighColor = ParamColor("Too High Color", colorBlack );
+pPrevDayVMaxFraction = Param("Max Fraction of Prev Day V", 0.004, 0.00005, 1, 0.0005) * Interval()/60;
+pDaysOfVolToAverage = Param("Days of Vol to Avg", 10, 2, 100, 1);
+
+SetBarsRequired(pDaysOfVolToAverage * 8 *  Interval()/60, 100);
+
+DayV = TimeFrameCompress( V, inDaily, compressVolume );
+DayVAvg = MA(DayV, pDaysOfVolToAverage);
+PrevDayVMa = TimeFrameExpand( Ref(DayVAvg, -1), inDaily, expandFirst );
+
+VIsTooHigh = V > PrevDayVMa  * pPrevDayVMaxFraction;
+
+aRthVp = IIf(VIsTooHigh, PrevDayVMa  * pPrevDayVMaxFraction , V);
+VColor = IIf(VIsTooHigh, pTooHighColor, IIf( C > O, pUpColor, pDownColor ));
+
+Plot( aRthVp, "Volume", VColor, ParamStyle( "Style", styleHistogram | styleThick, maskHistogram  ) );
+
+//plot the real volume in its own scale so that you can
+//click on the overflow bar and see the actual volume in the pane title
+Plot(V, "True Volume", colorWhite, styleNoDraw | styleOwnScale);
+
+Title = "  " + NumToStr(V, 0.0) + ",    " + NumToStr(PrevDayVMa  * pPrevDayVMaxFraction, 0.0);
+}
+else
+{
+	//display standard up down color display as this Interval is not supported
+	VColor = IIf( C > O, pUpColor, pDownColor );
+
+	Plot( V, "Volume", VColor, ParamStyle( "Style", styleHistogram | styleThick, maskHistogram  ) );
+
+	Title = "True Volume = " + NumToStr(V, 0.0) + ",    Max Visible Volume = NA";
+
+}

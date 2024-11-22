@@ -1,0 +1,6 @@
+Uphigh = HHV (C,90);
+downhigh = LLV (C,40);
+Buy = C >= Uphigh;
+Sell = C <= downhigh;
+Buy = ExRem(Buy,Sell);
+Sell = ExRem(Sell,Buy);
