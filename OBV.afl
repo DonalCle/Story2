@@ -6,22 +6,28 @@ obvValue = OBV();
 UpperBuffer = 25000;  // Buffer for the upper threshold
 LowerBuffer = -25000;  // Buffer for the lower threshold
 
+// Calculate scaling factor based on desired range
+minOBV = Lowest(obvValue, 252);  // Minimum OBV value in the last year (252 trading days)
+maxOBV = Highest(obvValue, 252);  // Maximum OBV value in the last year
+scaleFactor = (TopLevel - BottomLevel) / (maxOBV - minOBV);
+scaledOBV = (obvValue - minOBV) * scaleFactor + BottomLevel;
+
 // Plot static lines
 Plot(TopLevel, "Top Static Line", colorRed, styleLine | styleNoLine | styleNoTitle);
 Plot(BottomLevel, "Bottom Static Line", colorGreen, styleLine | styleNoLine | styleNoTitle);
 Plot(Top1, "Top Static Line", colorRed, styleLine | styleThick | styleNoTitle);
 Plot(Bottom1, "Bottom Static Line", colorGreen, styleLine | styleThick | styleNoTitle);
 
-// Plot OBV line for debugging
-Plot(obvValue, "OBV", colorBlue, styleLine | styleOwnScale | styleThick);
+// Plot scaled OBV line for debugging
+Plot(scaledOBV, "Scaled OBV", colorBlue, styleLine | styleOwnScale | styleThick);
 
 // Generate buy and sell signals
-BuySignal = Cross(obvValue, Bottom1 + UpperBuffer) AND obvValue < Bottom1 - LowerBuffer;
-SellSignal = Cross(Top1 - UpperBuffer, obvValue) AND obvValue > Top1 + LowerBuffer;
+BuySignal = Cross(scaledOBV, Bottom1 + UpperBuffer) AND scaledOBV < Bottom1 - LowerBuffer;
+SellSignal = Cross(Top1 - UpperBuffer, scaledOBV) AND scaledOBV > Top1 + LowerBuffer;
 
 // Plot buy and sell signals
-Plot(IIf(BuySignal, obvValue, Null), "Buy Signal", colorGreen, styleHistogram | styleNoTitle);
-Plot(IIf(SellSignal, obvValue, Null), "Sell Signal", colorRed, styleHistogram | styleNoTitle);
+Plot(IIf(BuySignal, scaledOBV, Null), "Buy Signal", colorGreen, styleHistogram | styleNoTitle);
+Plot(IIf(SellSignal, scaledOBV, Null), "Sell Signal", colorRed, styleHistogram | styleNoTitle);
 
 // Debug plots for buffer conditions
 Plot(Bottom1 + UpperBuffer, "Bottom1 + UpperBuffer", colorOrange, styleLine | styleDashed | styleNoTitle);
@@ -30,11 +36,11 @@ Plot(Top1 - UpperBuffer, "Top1 - UpperBuffer", colorOrange, styleLine | styleDas
 Plot(Top1 + LowerBuffer, "Top1 + LowerBuffer", colorLime, styleLine | styleDashed | styleNoTitle);
 
 // Print debug information
-AddColumn(obvValue, "OBV");
+AddColumn(scaledOBV, "Scaled OBV");
 AddColumn(BuySignal, "Buy Signal");
 AddColumn(SellSignal, "Sell Signal");
 
 // Title with dynamic values
-Title = EncodeColor(colorWhite) + "OBV: " + WriteVal(obvValue, 1.2) +
+Title = EncodeColor(colorWhite) + "Scaled OBV: " + WriteVal(scaledOBV, 1.2) +
         " | TopLevel: " + WriteVal(TopLevel, 1.2) +
         " | BottomLevel: " + WriteVal(BottomLevel, 1.2);
