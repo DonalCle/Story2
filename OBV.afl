@@ -5,6 +5,12 @@ Bottom1 = -80;
 obvValue = OBV();
 UpperBuffer = 50;  // Buffer for the upper threshold
 LowerBuffer = -50;  // Buffer for the lower threshold
+
+// Debug plots for raw OBV values
+Plot(obvValue, "Raw OBV", colorBlack, styleLine | styleThick);
+Plot(Lowest(obvValue), "Lowest OBV", colorPurple, styleLine | styleDashed);
+Plot(Highest(obvValue), "Highest OBV", colorOrange, styleLine | styleDashed);
+
 normalizedOBV = 100 * (obvValue - Lowest(obvValue)) / (Highest(obvValue) - Lowest(obvValue));
 Plot(TopLevel, "Top Static Line", colorRed, styleLine | styleNoLine | styleNoTitle);
 Plot(BottomLevel, "Bottom Static Line", colorGreen, styleLine | styleNoLine | styleNoTitle);
