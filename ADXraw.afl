@@ -27,4 +27,9 @@ for (i = 0; i < BarCount; i++) {
         PlotText("S", i, L[i] - dist[i], colorRed, -1,50);
     }
 }
-_SECTION_END();
+/*_SECTION_END();
+Buy=Cross(Issue,Lower);
+Sell= Cross(Upper,Issue);
+PlotShapes(IIf(Buy, shapeUpTriangle, shapeNone),colorLime, 0,L, Offset=11);
+PlotShapes(IIf(Sell, shapeDownTriangle, shapeNone),colorOrange, 0,H, Offset=11);
+*/
