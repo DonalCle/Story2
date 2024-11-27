@@ -27,10 +27,19 @@ for (i = 0; i < BarCount; i++) {
 PrevADX = Ref(MyADX, -1);
 PrevBuyersPower = Ref(BuyersPower, -1);
 PrevSellersPower = Ref(SellersPower, -1);
-LastSignalWasBuy = Flip(BuyersPower, SellersPower); // Track last signal type
 
-Buy = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (Ref(SellersPower, -1) AND NOT LastSignalWasBuy);
-Sell = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (Ref(BuyersPower, -1) AND LastSignalWasBuy);
+// Track the last signal type using a custom state variable
+LastSignal = Nz(StaticVarGet("LastSignal"), 0); // 0: None, 1: Buy, -1: Sell
+
+Buy = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (LastSignal != 1) AND NOT SellersPower;
+Sell = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (LastSignal != -1) AND NOT BuyersPower;
+
+// Update the last signal state
+if (Buy) {//condition if ,while,for statemwnts has to be Numeric or boolean type.  You cannot array here, please use [] (array subscript operator) to access array elements
+    StaticVarSet("LastSignal", 1);
+} else if (Sell) {
+    StaticVarSet("LastSignal", -1);
+}
 
 PlotShapes(IIf(Buy, shapeUpTriangle, shapeNone), colorLime, 0, L, Offset = 11);
 PlotShapes(IIf(Sell, shapeDownTriangle, shapeNone), colorOrange, 0, H, Offset = 11);
