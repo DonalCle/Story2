@@ -1,30 +1,30 @@
-//_SECTION_BEGIN("THEADX");
-//P1 = Param("Period",4,4,100,1);
-//MyPDI= PDI(P1);//Positive Directional Indicator
-//MyMDI= MDI(P1);//Negative Directional Indicator (Minus)
-//MyADX= ADX(P1);//Average Directional Movement Index
+_SECTION_BEGIN("THEADX");
+P1 = Param("Period",4,4,100,1);
+MyPDI= PDI(P1);//Positive Directional Indicator
+MyMDI= MDI(P1);//Negative Directional Indicator (Minus)
+MyADX= ADX(P1);//Average Directional Movement Index
 
 
-//Plot( MyPDI,"+DI",colorGold, styleLine|styleNoLabel);
-//Plot( MyMDI,"-DI",colorWhite, styleLine|styleNoLabel);
+Plot( MyPDI,"+DI",colorGold, styleNoLine|styleNoLabel);
+Plot( MyMDI,"-DI",colorWhite, styleNoLine|styleNoLabel);
 //Plot( MyADX,"ADX",col, styleLine);
 
 
-//col = IIf( MyADX >= Ref( MyADX, -1 ), colorBlue, styleNoLine );
-//Plot ( MyADX,"ADX",col, styleThick|styleLeftAxisScale,2,2);
+col = IIf( MyADX >= Ref( MyADX, -1 ), colorBlue, styleNoLine );
+Plot ( MyADX,"ADX",col, styleThick|styleLeftAxisScale,2,2);
 
-//BuyersPower = Cross(MyPDI,MyMDI);
-//dist = -2 * ATR(1);
-//for (i = 0; i < BarCount; i++) {
-//    if (BuyersPower[i]) {
-//        PlotText("B", i, L[i] - dist[i], colorGreen, -1,20);
-//    }
-//}
-//SellersPower = Cross(MyMDI,MyPDI);
-//dist = -2 * ATR(1);
-//for (i = 0; i < BarCount; i++) {
-//    if (SellersPower[i]) {
-//        PlotText("S", i, L[i] - dist[i], colorRed, -1,50);
-//    }
-//}
-//_SECTION_END();
+BuyersPower = Cross(MyPDI,MyMDI);
+dist = -2 * ATR(1);
+for (i = 0; i < BarCount; i++) {
+    if (BuyersPower[i]) {
+        PlotText("B", i, L[i] - dist[i], colorGreen, -1,20);
+    }
+}
+SellersPower = Cross(MyMDI,MyPDI);
+dist = -2 * ATR(1);
+for (i = 0; i < BarCount; i++) {
+    if (SellersPower[i]) {
+        PlotText("S", i, L[i] - dist[i], colorRed, -1,50);
+    }
+}
+_SECTION_END();
