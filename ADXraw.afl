@@ -7,7 +7,7 @@ MyADX = ADX(P1); // Average Directional Movement Index
 Plot(MyPDI, "+DI", colorGold, styleNoLine | styleNoLabel);
 Plot(MyMDI, "-DI", colorWhite, styleNoLine | styleNoLabel);
 
-col = IIf(MyADX >= Ref(MyADX, -1), colorBlue, colorRed);
+col = IIf(MyADX >= Ref(MyADX, -1), colorBlue, colorBlack);
 Plot(MyADX, "ADX", col, styleThick | styleLeftAxisScale, 2, 2);
 
 BuyersPower = Cross(MyPDI, MyMDI);
@@ -16,10 +16,10 @@ dist = -2 * ATR(1);
 
 for (i = 0; i < BarCount; i++) {
     if (BuyersPower[i]) {
-        PlotText("B", i, L[i] - dist[i], colorGreen, -1, 20);
+        PlotText("B", i, L[i] - dist, colorGreen, -1, 20);
     }
     if (SellersPower[i]) {
-        PlotText("S", i, L[i] - dist[i], colorRed, -1, 50);
+        PlotText("S", i, L[i] - dist, colorRed, -1, 50);
     }
 }
 
@@ -28,8 +28,8 @@ PrevADX = Ref(MyADX, -1);
 PrevBuyersPower = Ref(BuyersPower, -1);
 PrevSellersPower = Ref(SellersPower, -1);
 
-Buy = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND Ref(SellersPower, -1);
-Sell = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND Ref(BuyersPower, -1);
+Buy = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND PrevSellersPower;
+Sell = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND PrevBuyersPower;
 
 PlotShapes(IIf(Buy, shapeUpTriangle, shapeNone), colorLime, 0, L, Offset = 11);
 PlotShapes(IIf(Sell, shapeDownTriangle, shapeNone), colorOrange, 0, H, Offset = 11);
