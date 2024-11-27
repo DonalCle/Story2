@@ -1,43 +1,39 @@
+_SECTION_BEGIN("THEADX");
 //Trend Following Systems DO NOT work when ADX is Below 20 - Tech Analysis A-Z; page 120
-// Downloaded From https://www.WiseStockTrader.com
-/* ADXRaw  */
-//Afl code - Prakash Shenoi //
+P1 = Param("Period", 4, 4, 100, 1);
+MyPDI = PDI(P1); //Positive Directional Indicator
+MyMDI = MDI(P1); //Negative Directional Indicator (Minus)
+MyADX = ADX(P1); //Average Directional Movement Index
 
-_SECTION_BEGIN("ADX");
-TP= Param("Time Periods",14,1,50);
-PlusDM= IIf(High>Ref(High,-1)AND Low>=Ref(Low,-1), High-Ref(High,-1),
-IIf(High>Ref(High,-1) AND Low<Ref(Low,-1)AND High-Ref(High,-1)>Ref(Low,-1)-Low,
-High-Ref(High,-1), 0));
-DIPlus= 100 * Wilders(PlusDM,TP) /
-ATR(TP);
-MinusDM= IIf(Low<Ref(Low,-1) AND High<=Ref(High,-1), Ref(Low,-1)-Low,
-IIf(High>Ref(High,-1) AND Low<Ref(Low,-1)AND High-Ref(High,-1)<Ref(Low,-1)-Low,
-Ref(Low,-1)-Low, 0));
-DIMinus = 100 * Wilders(MinusDM,TP) /
-ATR(TP);
-Diff= abs(DIPlus - DIMinus);
-DISum= DIPlus + DIMinus;
-ADXRaw= 100 * Wilders(Diff/DISum, TP);
+Plot(MyPDI, "+DI", colorWhite, styleNoLine | styleNoLabel);
+Plot(MyMDI, "-DI", colorBlue, styleNoLine | styleNoLabel);
+
+BuyersPower = Cross(MyPDI, MyMDI);
+SellersPower = Cross(MyMDI, MyPDI);
+
+col = colorBlue; // Initialize col with blue
+colArray = Null; // Initialize an array to store colors
+
+for (i = 1; i < BarCount; i++) {
+    if (BuyersPower[i]) {
+        col = colorGreen;
+    } else if (SellersPower[i]) {
+        col = colorRed;
+    } else if (MyADX[i] < MyADX[i - 1]) {
+        col = colorBlue;
+    }
+    colArray[i] = col; // Store the color in the array
+}
+
+Plot(MyADX, "ADX", colArray, styleThick | styleLeftAxisScale, 2, 2); // Plot the ADX line once
+
+dist = -2 * ATR(1);
+for (i = 0; i < BarCount; i++) {
+    if (BuyersPower[i]) {
+        PlotText("B", i, L[i] - dist[i], colorGreen, -1, 20);
+    }
+    if (SellersPower[i]) {
+        PlotText("S", i, L[i] - dist[i], colorRed, -1, 50);
+    }
+}
 _SECTION_END();
-
-Issue1 = DiMinus;
-Issue0 = DiPlus;
-Issue = ADXRaw;
-Upper = 75;
-middle =50;
-Lower =30;
-Plot(Upper,"75",colorDarkGrey,styleDashed);
-Plot(Middle,"50",colorGrey40,styleDashed);
-Plot(Lower,"30",colorGrey50,styleDashed);
-
-P1 = Param("Time Periods",14,1,50);
-MyPDI= PDI(P1);//Positive Directional Indicator
-MyMDI= MDI(P1);//Negative Directional Indicator (Minus)
-Issue= ADX(P1);//Average Directional Movement Index
-col = IIf( Issue >= Ref( Issue, -1 ), colorBlue, colorDarkGrey );
-Plot ( Issue,"ADX",col, styleThick);
-
-Buy=Cross(Issue,Middle)+Buy=Cross(Issue,Upper)+Buy=Cross(Issue,Lower);
-//Sell=Cross(Upper,Issue)+Sell=Cross(Lower,Issue)+Sell=Cross(Middle,Issue);
-PlotShapes(IIf(Buy, shapeSmallCircle, shapeNone),colorLightBlue, 0, L, Offset=30);
-//PlotShapes(IIf(Sell, shapeSmallCircle, shapeNone),colorRed, 0, H, Offset=170);
