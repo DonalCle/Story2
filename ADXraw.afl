@@ -23,9 +23,13 @@ for (i = 0; i < BarCount; i++) {
     }
 }
 
-// New signal logic: buy/sell signals when ADX moves down after moving upwards and opposite to previous B/S signal
-Buy = (MyADX < Ref(MyADX, -1)) AND Ref(MyADX, -1) > Ref(MyADX, -2) AND Ref(SellersPower, -1);
-Sell = (MyADX < Ref(MyADX, -1)) AND Ref(MyADX, -1) > Ref(MyADX, -2) AND Ref(BuyersPower, -1);
+// Enhanced signal logic: buy/sell signals when ADX moves down after moving upwards and opposite to previous B/S signal
+PrevADX = Ref(MyADX, -1);
+PrevBuyersPower = Ref(BuyersPower, -1);
+PrevSellersPower = Ref(SellersPower, -1);
+
+Buy = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND PrevSellersPower;
+Sell = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND PrevBuyersPower;
 
 PlotShapes(IIf(Buy, shapeUpTriangle, shapeNone), colorLime, 0, L, Offset = 11);
 PlotShapes(IIf(Sell, shapeDownTriangle, shapeNone), colorOrange, 0, H, Offset = 11);
