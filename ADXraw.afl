@@ -1,4 +1,3 @@
-
 _SECTION_BEGIN("THEADX");
 P1 = Param("Period", 4, 4, 100, 1);
 MyPDI = PDI(P1); // Positive Directional Indicator
@@ -17,18 +16,16 @@ dist = -2 * ATR(1); // Use a single value for dist
 
 for (i = 0; i < BarCount; i++) {
     if (BuyersPower[i]) {
-        PlotText("B", i, L[i] - dist[i], colorGreen, -1, 20);
+        PlotText("B", i, L[i] - dist, colorGreen, -1, 20);
     } 
     if (SellersPower[i]) {
-        PlotText("S", i, L[i] - dist[i], colorRed, -1, 50);
+        PlotText("S", i, L[i] - dist, colorRed, -1, 50);
     }
 }
-
 
 PrevADX = Ref(MyADX, -1);
 PrevBuyersPower = Ref(BuyersPower, -1);
 PrevSellersPower = Ref(SellersPower, -1);
-
 
 LastSignal = Nz(StaticVarGet("LastSignal"), 0); // 0: None, 1: Buy, -1: Sell
 
@@ -37,7 +34,6 @@ SellCondition = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (LastSignal
 
 Buy = BuyCondition AND NOT SellCondition;
 Sell = SellCondition AND NOT BuyCondition;
-
 
 if (Buy[BarCount - 1]) {
     StaticVarSet("LastSignal", 1);
