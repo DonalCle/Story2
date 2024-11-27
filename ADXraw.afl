@@ -1,47 +1,39 @@
 _SECTION_BEGIN("THEADX");
+
 P1 = Param("Period", 4, 4, 100, 1);
 MyPDI = PDI(P1); // Positive Directional Indicator
 MyMDI = MDI(P1); // Negative Directional Indicator (Minus)
 MyADX = ADX(P1); // Average Directional Movement Index
 
-Plot(MyPDI, "+DI", colorGold, styleNoLine | styleNoLabel);
-Plot(MyMDI, "-DI", colorWhite, styleNoLine | styleNoLabel);
+col = IIf(MyADX > Ref(MyADX, -1), colorGreen, colorRed);
+Plot(MyPDI, "+DI", colorWhite, styleNoLine | styleNoLabel);
+Plot(MyMDI, "-DI", colorBlue, styleNoLine | styleNoLabel);
 
-col = IIf(MyADX >= Ref(MyADX, -1), colorBlue, colorBlack);
+col = IIf(MyADX >= Ref(MyADX, -1), colorBlue, styleNoLine);
 Plot(MyADX, "ADX", col, styleThick | styleLeftAxisScale, 2, 2);
 
 BuyersPower = Cross(MyPDI, MyMDI);
-SellersPower = Cross(MyMDI, MyPDI);
-dist = 2 * ATR(1); // Use ATR to calculate an array for dist
-
+dist = -2 * ATR(1);
 for (i = 0; i < BarCount; i++) {
     if (BuyersPower[i]) {
         PlotText("B", i, L[i] - dist[i], colorGreen, -1, 20);
-    } 
+    }
+}
+SellersPower = Cross(MyMDI, MyPDI);
+dist = -2 * ATR(1);
+for (i = 0; i < BarCount; i++) {
     if (SellersPower[i]) {
         PlotText("S", i, L[i] - dist[i], colorRed, -1, 50);
     }
 }
 
-PrevADX = Ref(MyADX, -1);
-PrevBuyersPower = Ref(BuyersPower, -1);
-PrevSellersPower = Ref(SellersPower, -1);
-
-LastSignal = Nz(StaticVarGet("LastSignal"), 0); // 0: None, 1: Buy, -1: Sell
-
-BuyCondition = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (LastSignal != 1) AND NOT SellersPower;
-SellCondition = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (LastSignal != -1) AND NOT BuyersPower;
-
-Buy = BuyCondition AND NOT SellCondition;
-Sell = SellCondition AND NOT BuyCondition;
-
-if (Buy[BarCount - 1]) {
-    StaticVarSet("LastSignal", 1);
-} else if (Sell[BarCount - 1]) {
-    StaticVarSet("LastSignal", -1);
+// Plot blue signal when OBV changes from up to down
+OBVValue = OBV();
+OBVSignal = (OBVValue < Ref(OBVValue, -1)) AND (Ref(OBVValue, -1) > Ref(OBVValue, -2));
+for (i = 0; i < BarCount; i++) {
+    if (OBVSignal[i]) {
+        PlotText("OBV", i, L[i] - dist[i], colorBlue, -1, 30);
+    }
 }
-
-PlotShapes(IIf(Buy, shapeUpTriangle, shapeNone), colorLime, 0, L, Offset = 11);
-PlotShapes(IIf(Sell, shapeDownTriangle, shapeNone), colorOrange, 0, H, Offset = 11);
 
 _SECTION_END();
