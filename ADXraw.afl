@@ -28,11 +28,10 @@ PrevADX = Ref(MyADX, -1);
 PrevBuyersPower = Ref(BuyersPower, -1);
 PrevSellersPower = Ref(SellersPower, -1);
 
-Buy = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2));
-Sell = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2));
+Buy = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (NOT Ref(BuyersPower, -1));
+Sell = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (NOT Ref(SellersPower, -1));
 
 PlotShapes(IIf(Buy, shapeUpTriangle, shapeNone), colorLime, 0, L, Offset = 11);
 PlotShapes(IIf(Sell, shapeDownTriangle, shapeNone), colorOrange, 0, H, Offset = 11);
 
 _SECTION_END();
-
