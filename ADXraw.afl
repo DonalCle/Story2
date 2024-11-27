@@ -12,14 +12,14 @@ Plot(MyADX, "ADX", col, styleThick | styleLeftAxisScale, 2, 2);
 
 BuyersPower = Cross(MyPDI, MyMDI);
 SellersPower = Cross(MyMDI, MyPDI);
-dist = -2 * ATR(1); // Use a single value for dist
+dist = 2 * ATR(1); // Use ATR to calculate an array for dist
 
 for (i = 0; i < BarCount; i++) {
     if (BuyersPower[i]) {
-        PlotText("B", i, L[i] - dist, colorGreen, -1, 20);
+        PlotText("B", i, L[i] - dist[i], colorGreen, -1, 20);
     } 
     if (SellersPower[i]) {
-        PlotText("S", i, L[i] - dist, colorRed, -1, 50);
+        PlotText("S", i, L[i] - dist[i], colorRed, -1, 50);
     }
 }
 
