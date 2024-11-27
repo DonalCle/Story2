@@ -27,9 +27,10 @@ for (i = 0; i < BarCount; i++) {
 PrevADX = Ref(MyADX, -1);
 PrevBuyersPower = Ref(BuyersPower, -1);
 PrevSellersPower = Ref(SellersPower, -1);
+LastSignalWasBuy = Flip(BuyersPower, SellersPower); // Track last signal type
 
-Buy = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (Ref(SellersPower, -1) OR NOT Ref(BuyersPower, -1));
-Sell = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (Ref(BuyersPower, -1) OR NOT Ref(SellersPower, -1));
+Buy = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (Ref(SellersPower, -1) AND NOT LastSignalWasBuy);
+Sell = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (Ref(BuyersPower, -1) AND LastSignalWasBuy);
 
 PlotShapes(IIf(Buy, shapeUpTriangle, shapeNone), colorLime, 0, L, Offset = 11);
 PlotShapes(IIf(Sell, shapeDownTriangle, shapeNone), colorOrange, 0, H, Offset = 11);
