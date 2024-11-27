@@ -1,39 +1,30 @@
-_SECTION_BEGIN("THEADX");
-//Trend Following Systems DO NOT work when ADX is Below 20 - Tech Analysis A-Z; page 120
-P1 = Param("Period", 4, 4, 100, 1);
-MyPDI = PDI(P1); //Positive Directional Indicator
-MyMDI = MDI(P1); //Negative Directional Indicator (Minus)
-MyADX = ADX(P1); //Average Directional Movement Index
+//_SECTION_BEGIN("THEADX");
+//P1 = Param("Period",4,4,100,1);
+//MyPDI= PDI(P1);//Positive Directional Indicator
+//MyMDI= MDI(P1);//Negative Directional Indicator (Minus)
+//MyADX= ADX(P1);//Average Directional Movement Index
 
-Plot(MyPDI, "+DI", colorWhite, styleNoLine | styleNoLabel);
-Plot(MyMDI, "-DI", colorBlue, styleNoLine | styleNoLabel);
 
-BuyersPower = Cross(MyPDI, MyMDI);
-SellersPower = Cross(MyMDI, MyPDI);
+//Plot( MyPDI,"+DI",colorGold, styleLine|styleNoLabel);
+//Plot( MyMDI,"-DI",colorWhite, styleLine|styleNoLabel);
+//Plot( MyADX,"ADX",col, styleLine);
 
-col = colorBlue; // Initialize col with blue
-colArray = Null; // Initialize an array to store colors
 
-for (i = 1; i < BarCount; i++) {
-    if (BuyersPower[i]) {
-        col = colorGreen;
-    } else if (SellersPower[i]) {
-        col = colorRed;
-    } else if (MyADX[i] < MyADX[i - 1]) {
-        col = colorBlue;
-    }
-    colArray[i] = col; // Store the color in the array
-}
+//col = IIf( MyADX >= Ref( MyADX, -1 ), colorBlue, styleNoLine );
+//Plot ( MyADX,"ADX",col, styleThick|styleLeftAxisScale,2,2);
 
-Plot(MyADX, "ADX", colArray, styleThick | styleLeftAxisScale, 2, 2); // Plot the ADX line once
-
-dist = -2 * ATR(1);
-for (i = 0; i < BarCount; i++) {
-    if (BuyersPower[i]) {
-        PlotText("B", i, L[i] - dist[i], colorGreen, -1, 20);
-    }
-    if (SellersPower[i]) {
-        PlotText("S", i, L[i] - dist[i], colorRed, -1, 50);
-    }
-}
-_SECTION_END();
+//BuyersPower = Cross(MyPDI,MyMDI);
+//dist = -2 * ATR(1);
+//for (i = 0; i < BarCount; i++) {
+//    if (BuyersPower[i]) {
+//        PlotText("B", i, L[i] - dist[i], colorGreen, -1,20);
+//    }
+//}
+//SellersPower = Cross(MyMDI,MyPDI);
+//dist = -2 * ATR(1);
+//for (i = 0; i < BarCount; i++) {
+//    if (SellersPower[i]) {
+//        PlotText("S", i, L[i] - dist[i], colorRed, -1,50);
+//    }
+//}
+//_SECTION_END();
