@@ -1,3 +1,4 @@
+
 _SECTION_BEGIN("THEADX");
 P1 = Param("Period", 4, 4, 100, 1);
 MyPDI = PDI(P1); // Positive Directional Indicator
@@ -23,12 +24,12 @@ for (i = 0; i < BarCount; i++) {
     }
 }
 
-// Enhanced signal logic: buy/sell signals when ADX moves down after moving upwards and opposite to previous B/S signal
+
 PrevADX = Ref(MyADX, -1);
 PrevBuyersPower = Ref(BuyersPower, -1);
 PrevSellersPower = Ref(SellersPower, -1);
 
-// Track the last signal type using a custom state variable
+
 LastSignal = Nz(StaticVarGet("LastSignal"), 0); // 0: None, 1: Buy, -1: Sell
 
 BuyCondition = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (LastSignal != 1) AND NOT SellersPower;
@@ -37,7 +38,7 @@ SellCondition = (MyADX < PrevADX) AND (PrevADX > Ref(MyADX, -2)) AND (LastSignal
 Buy = BuyCondition AND NOT SellCondition;
 Sell = SellCondition AND NOT BuyCondition;
 
-// Update the last signal state
+
 if (Buy[BarCount - 1]) {
     StaticVarSet("LastSignal", 1);
 } else if (Sell[BarCount - 1]) {
